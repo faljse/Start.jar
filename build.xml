@@ -1,4 +1,4 @@
-<project name="Minimal HTTP Server" default="pack" basedir=".">
+<project name="Start.jar: Minimal HTTP Server dedicated to run HTML5 games" default="pack" basedir=".">
 	<target name="compile">
 		<mkdir dir="classes" />
 		<javac srcdir="src" destdir="classes" />
