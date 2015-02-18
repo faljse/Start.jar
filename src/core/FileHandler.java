@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.org.apache.xml.internal.security.utils.HelperNodeList;
 
 public class FileHandler implements HttpHandler {
 
