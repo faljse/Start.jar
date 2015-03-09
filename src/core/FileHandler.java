@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.Date;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -15,12 +16,14 @@ public class FileHandler implements HttpHandler {
 
 	@Override
 	public void handle(HttpExchange h) throws IOException {
+		Main.lastRequestTime = new Date().getTime();
+		
 		System.out.println(h.getRequestMethod() + " " + h.getRequestURI());
 		OutputStream os = h.getResponseBody();
 		String filePath = h.getRequestURI().toString();
 
 		if (filePath.equals("/"))
-			filePath = "/" + Config.get("DefaultFile");
+			filePath = "/" + Main.defaultFile;
 
 		filePath = Main.documentRoot + filePath;
 

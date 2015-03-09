@@ -13,14 +13,19 @@ public class Config {
 	 * Initialize defaults
 	 */
 	public static void initDefaults() {
-		params.put("DocumentRoot", ".");
-		params.put("Host", "127.0.0.1");
-		params.put("Port", "8888");
-		params.put("ShowFrame", "true");
-		params.put("ShutdownAfter", "300");
-		params.put("DefaultFile", "index.html");
+		set("DocumentRoot", ".");
+		set("Host", "127.0.0.1");
+		set("Port", "8888");
+		set("ShowFrame", "true");
+		set("ShutdownAfter", "300");
+		set("DefaultFile", "index.html");
 	}
 
+	/**
+	 * Load configuration data from a file
+	 * 
+	 * @param fileName
+	 */
 	public static void loadConfig(String fileName) {
 		File configFile = new File(fileName);
 
@@ -42,6 +47,16 @@ public class Config {
 		} else {
 			System.err.printf("ERROR: Couldn't load config from file <%s>. File does not exists.\n", fileName);
 		}
+	}
+
+	/**
+	 * Set a value for a config param
+	 * 
+	 * @param param
+	 * @param value
+	 */
+	public static void set(String param, String value) {
+		params.put(param, value);
 	}
 
 	/**

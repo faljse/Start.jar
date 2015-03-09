@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,11 +19,15 @@ public class Main {
 	private static InetSocketAddress addr;
 	private static HttpServer srv;
 
-	public static boolean showWindow = true;
+	public static boolean showFrame = true;
 	public static String appName = "Start.jar";
 	public static String documentRoot;
 	public static String bindHost;
+	public static String defaultFile;
 	public static int port;
+	public static int shutdownAfter;
+	public static long lastRequestTime;
+	private static Timeout timeOutThread;
 
 	/**
 	 * @param args
@@ -34,13 +39,11 @@ public class Main {
 
 		if (defaultConfig.exists()) {
 			Config.loadConfig(defaultConfig.getAbsolutePath());
+		} else {
+			parseArgs(args);
 		}
 
-		documentRoot = Config.get("DocumentRoot");
-		bindHost = Config.get("Host");
-		port = Integer.valueOf(Config.get("Port"));
-
-		parseArgs(args);
+		populateConfig();
 
 		if ((documentRoot.length() == 1) && (documentRoot.equals("."))) {
 			documentRoot = System.getProperty("user.dir");
@@ -65,18 +68,23 @@ public class Main {
 		String serverUrl = "http://" + bindHost + ":" + String.valueOf(port);
 
 		try {
-			if (showWindow) {
+			if (showFrame) {
 				JFrame frame = new JFrame(appName);
 				frame.setSize(200, 100);
 
-				JLabel label = new JLabel("<html><p>Running " + appName + " at <a href=\"" + serverUrl + "\">" + serverUrl + "</a></p>"
-						+ "<p>Document root is <b>" + documentRoot + "</b></p>" + "<p>Just close this window to stop the server</p></html>");
+				JLabel label = new JLabel("<html><p>Running " + appName + " at <a href=\"" + serverUrl + "\">" + serverUrl + "</a></p>" + "<p>Document root is <b>" + documentRoot + "</b></p>"
+						+ "<p>Just close this window to stop the server</p></html>");
 
 				frame.add(label);
 				frame.pack();
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				frame.setVisible(true);
 			}
+
+			lastRequestTime = new Date().getTime();
+
+			timeOutThread = new Timeout();
+			timeOutThread.start();
 
 			srv = HttpServer.create(addr, 10);
 			srv.createContext("/", new FileHandler());
@@ -93,6 +101,28 @@ public class Main {
 	}
 
 	/**
+	 * quit
+	 * 
+	 */
+	public static void quit() {
+		srv.stop(0);
+		System.exit(0);
+	}
+
+	/**
+	 * Populate configuration
+	 * 
+	 */
+	public static void populateConfig() {
+		bindHost = Config.get("Host");
+		port = Integer.valueOf(Config.get("Port"));
+		showFrame = Config.get("ShowFrame").equals("1");
+		documentRoot = Config.get("DocumentRoot");
+		defaultFile = Config.get("DefaultFile");
+		shutdownAfter = Integer.valueOf(Config.geti("ShutdownAfter"));
+	}
+
+	/**
 	 * Parse arguments
 	 * 
 	 * @param args
@@ -103,29 +133,38 @@ public class Main {
 			do {
 				String arg = args[currentArg];
 
-				if (arg.equals("-host")) {
-					bindHost = args[currentArg + 1];
+				if (arg.equals("--host") || arg.equals("-h")) {
+					Config.set("Host", args[currentArg + 1]);
 					currentArg++;
 				}
 
-				if (arg.equals("-port")) {
-					port = Integer.valueOf(args[currentArg + 1]);
+				if (arg.equals("--port") || arg.equals("-p")) {
+					Config.set("Port", args[currentArg + 1]);
 					currentArg++;
 				}
 
-				if (arg.equals("-frame")) {
-					showWindow = args[currentArg + 1].equals("1");
+				if (arg.equals("--frame") || arg.equals("-w")) {
+					Config.set("ShowFrame", args[currentArg + 1]);
 					currentArg++;
 				}
 
-				if (arg.equals("-root")) {
-					documentRoot = args[currentArg + 1];
+				if (arg.equals("--root") || arg.equals("-r")) {
+					Config.set("DocumentRoot", args[currentArg + 1]);
 					currentArg++;
 				}
 
-				if (arg.equals("-config")) {
+				if (arg.equals("--config") || arg.equals("-c")) {
 					Config.loadConfig(args[currentArg + 1]);
+					populateConfig();
 					currentArg++;
+				}
+
+				if (arg.equals("--index") || arg.equals("-i")) {
+					Config.set("DefaultFile", args[currentArg + 1]);
+				}
+
+				if (arg.equals("--shutdown-after") || arg.equals("-S")) {
+					Config.set("ShutdownAfter", args[currentArg + 1]);
 				}
 
 				currentArg++;
