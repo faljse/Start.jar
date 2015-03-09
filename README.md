@@ -1,8 +1,8 @@
 # Start.jar
-Minimal Java HTTP server to start html5 games
+Minimal Java HTTP server to start html5 games. **Start.jar** has zero dependencies besides java and it works on Windows, Linux and Mac OS X.
 
 ## Why?
-To be able to distribute your HTML5 game/application to the users without hosting the game. **Start.jar** will act as a HTTP server and launcher for your game.
+To be able to distribute a HTML5 game/application to the users without hosting the game. **Start.jar** will act as an HTTP server/launcher for your game. It will open your the main file of your game in the default browser immediately after starting.
 
 ### Testing tool
 **Start.jar** can be used as a testing tool while developing an HTML5 game. Instead of wasting your time trying to install and configure Apache/Nginx just use simple and straightforward **start.jar**. You can add **start.jar** to your `PATH` and run any HTML5 game just by executing a command under the game's directory.
@@ -50,11 +50,13 @@ You can specify program arguments like this:
 java -jar start.jar -host game.localhost -port 1234
 ```
 
-* `-host` - host to be bound for your HTTP server. Default value is `127.0.0.1`
-* `-port` - port to bind. Default value is `8888`
-* `-root` - Document root for your server. Default value is the current working directory
-* `-frame` - `1` for enable showing the program window (default) or `0` to run the program in background
-* `-config` - Path of the configuration file. Default value is `start.config` in the current working directory
+* `--host` `-h` - host to be bound for your HTTP server. Default value is `127.0.0.1`
+* `--port` `-p` - port to bind. Default value is `8888`
+* `--root` `-r` - Document root for your server. Default value is the current working directory
+* `--frame` `-w` - `1` for enable showing the program window (default) or `0` to run the program in background
+* `--config` `-c` - Path of the configuration file. Default value is `start.config` in the current working directory
+* `--index` `-i` - Default file to load if not specified (default value is `index.html`)
+* `--shutdown-after` or `-S` - Determines the time in seconds to shutdown the server after the last request. Default value is `300` (5 minutes)
 
 #### Configuration file
 
@@ -70,7 +72,7 @@ ShutdownAfter=300
 DefaultFile=index.html
 ```
 
-Each option should be placed on it's own line. Parameter and value is separated with `=` sign. No spaced allowed.
+Each option should be placed on it's own line. Parameters and values are separated with `=` sign. No spaced allowed.
 
 **Available parameters:**
 
