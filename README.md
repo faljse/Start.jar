@@ -46,8 +46,8 @@ You can change defaults of the start.jar by passing arguments to the program or 
 
 You can specify program arguments like this:
 
-```
-java -jar start.jar -host game.localhost -port 1234
+```shell
+$ java -jar start.jar --host game.localhost --port 1234
 ```
 
 * `--host` `-h` - host to be bound for your HTTP server. Default value is `127.0.0.1`
