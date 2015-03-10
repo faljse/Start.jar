@@ -73,7 +73,7 @@ public class FileHandler implements HttpHandler {
 					mime = "application/json";
 					break;
 				default:
-					System.out.printf("Cannot find a MIME-type for the extension: %s", extension);
+					System.out.printf("Cannot find a MIME-type for the extension: %s\n", extension);
 					mime = "text/html";
 
 				}
