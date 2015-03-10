@@ -16,7 +16,7 @@ public class FileHandler implements HttpHandler {
 	@Override
 	public void handle(HttpExchange h) throws IOException {
 		Main.lastRequestTime = new Date().getTime();
-		
+
 		System.out.println(h.getRequestMethod() + " " + h.getRequestURI());
 		OutputStream os = h.getResponseBody();
 		String filePath = h.getRequestURI().toString();
@@ -47,17 +47,29 @@ public class FileHandler implements HttpHandler {
 					case "htm":
 					case "xhtml":
 						mime = "text/html";
+						break;
 					case "jpg":
 					case "jpeg":
 						mime = "image/jpeg";
+						break;
 					case "png":
 						mime = "image/png";
+						break;
 					case "gif":
 						mime = "image/gif";
+						break;
 					case "css":
 						mime = "text/css";
+						break;
 					case "js":
 						mime = "application/javascript";
+						break;
+					case "json":
+						mime = "application/json";
+						break;
+					default:
+						mime = "text/html";
+
 					}
 				} else {
 					mime = "text/html";
