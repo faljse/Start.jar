@@ -35,44 +35,47 @@ public class FileHandler implements HttpHandler {
 
 			Headers hdr = h.getResponseHeaders();
 
-			String mime = Files.probeContentType(f.toPath());
+			String mime;
 
-			if (mime == null) {
-				String[] fileNameParts = f.getName().split(".");
-				if (fileNameParts.length > 0) {
-					String extension = fileNameParts[fileNameParts.length - 1].toLowerCase();
+			String[] fileNameParts = f.getName().split("\\.");
 
-					switch (extension) {
-					case "html":
-					case "htm":
-					case "xhtml":
-						mime = "text/html";
-						break;
-					case "jpg":
-					case "jpeg":
-						mime = "image/jpeg";
-						break;
-					case "png":
-						mime = "image/png";
-						break;
-					case "gif":
-						mime = "image/gif";
-						break;
-					case "css":
-						mime = "text/css";
-						break;
-					case "js":
-						mime = "application/javascript";
-						break;
-					case "json":
-						mime = "application/json";
-						break;
-					default:
-						mime = "text/html";
+			if (fileNameParts.length > 0) {
+				String extension = fileNameParts[fileNameParts.length - 1].toLowerCase();
 
-					}
-				} else {
+				switch (extension) {
+				case "html":
+				case "htm":
+				case "xhtml":
 					mime = "text/html";
+					break;
+				case "jpg":
+				case "jpeg":
+					mime = "image/jpeg";
+					break;
+				case "png":
+					mime = "image/png";
+					break;
+				case "gif":
+					mime = "image/gif";
+					break;
+				case "css":
+					mime = "text/css";
+					break;
+				case "js":
+					mime = "application/javascript";
+					break;
+				case "json":
+					mime = "application/json";
+					break;
+				default:
+					System.out.printf("Cannot find a MIME-type for the extension: %s", extension);
+					mime = "text/html";
+
+				}
+			} else {
+				mime = Files.probeContentType(f.toPath());
+				if (mime == null) {
+					mime = "application/octet-stream";
 				}
 			}
 

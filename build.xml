@@ -1,5 +1,9 @@
 <project name="Start.jar: Minimal HTTP Server dedicated to run HTML5 games" default="pack" basedir=".">
-	<target name="compile">
+	<target name="clean">
+            <delete dir="./classes" />
+        </target>
+        
+        <target name="compile" depends="clean">
 		<mkdir dir="classes" />
 		<javac srcdir="src" destdir="classes" />
 	</target>
