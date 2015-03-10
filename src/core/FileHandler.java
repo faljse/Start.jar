@@ -21,6 +21,11 @@ public class FileHandler implements HttpHandler {
 		OutputStream os = h.getResponseBody();
 		String filePath = h.getRequestURI().toString();
 
+		if (filePath.contains("?")) {
+			String fileQueryString[] = filePath.split("\\?");
+			filePath = fileQueryString[0];
+		}
+
 		if (filePath.equals("/"))
 			filePath = "/" + Main.defaultFile;
 
