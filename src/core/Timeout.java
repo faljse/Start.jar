@@ -12,7 +12,7 @@ public class Timeout extends Thread {
 		while (!interrupted()) {
 			long workTime = new Date().getTime() - Main.lastRequestTime;
 			if (workTime / 1000 > Main.shutdownAfter) {
-				System.out.printf("Server is shutting down due to timeout\n");
+				System.out.printf("Server is shutting down due to timeout (%d seconds since the last request)\n", workTime / 1000);
 				Main.quit();
 			}
 			try {
