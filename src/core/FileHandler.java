@@ -72,10 +72,18 @@ public class FileHandler implements HttpHandler {
 				case "json":
 					mime = "application/json";
 					break;
+				case "wav":
+					mime = "audio/wav";
+					break;
+				case "mp3":
+					mime = "audio/mpeg3";
+					break;
+				case "ogg":
+					mime = "audio/ogg";
+					break;
 				default:
 					System.out.printf("Cannot find a MIME-type for the extension: %s\n", extension);
 					mime = "text/html";
-
 				}
 			} else {
 				mime = Files.probeContentType(f.toPath());
