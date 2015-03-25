@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 
 public class Config {
-	private static HashMap<String, String> params = new HashMap<>();
+	private static HashMap<String, String> params = new HashMap<String, String>();
 
 	/**
 	 * Initialize defaults

@@ -5,7 +5,7 @@
         
         <target name="compile" depends="clean">
 		<mkdir dir="classes" />
-		<javac srcdir="src" destdir="classes" />
+		<javac srcdir="src" destdir="classes" source="7" target="7" />
 	</target>
 
 	<target name="pack" depends="compile">

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.util.Date;
 
@@ -29,7 +30,7 @@ public class FileHandler implements HttpHandler {
 		if (filePath.equals("/"))
 			filePath = "/" + Main.defaultFile;
 
-		filePath = Main.documentRoot + filePath;
+		filePath = Main.documentRoot + URLDecoder.decode(filePath, "UTF-8");
 
 		filePath = filePath.replace('/', File.separatorChar);
 
