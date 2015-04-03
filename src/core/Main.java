@@ -24,7 +24,8 @@ public class Main {
 	public static String documentRoot;
 	public static String bindHost;
 	public static String defaultFile;
-	public static int port;
+	public static int port_min;
+	public static int port_max;
 	public static int shutdownAfter;
 	public static long lastRequestTime;
 	private static Timeout timeOutThread;
@@ -35,11 +36,13 @@ public class Main {
 	public static void main(String[] args) {
 		Config.initDefaults();
 
-		File defaultConfig = new File(System.getProperty("user.dir") + File.pathSeparatorChar + "start.config");
+		File defaultConfig = new File(System.getProperty("user.dir") + File.separatorChar + "start.config");
 
 		if (defaultConfig.exists()) {
+			System.out.printf("Loading config from %s\n", defaultConfig);
 			Config.loadConfig(defaultConfig.getAbsolutePath());
 		} else {
+			System.err.printf("Config file not found [%s]\n", defaultConfig);
 			parseArgs(args);
 		}
 
@@ -60,12 +63,16 @@ public class Main {
 		if (new File(documentRoot).exists()) {
 			System.out.printf("Document root: %s\n", documentRoot);
 		} else {
-			System.err.printf("ERROR: Document root is not a valid directory path\n");
+			System.err.printf("ERROR: Document root [%s] is not valid directory path\n", documentRoot);
 			System.exit(1);
 		}
 
-		addr = new InetSocketAddress(bindHost, port);
-		String serverUrl = "http://" + bindHost + ":" + String.valueOf(port);
+		startServer(bindHost, port_min);
+	}
+
+	public static void startServer(String host, int port) {
+		addr = new InetSocketAddress(host, port);
+		String serverUrl = "http://" + host + ":" + String.valueOf(port);
 
 		try {
 			if (showFrame) {
@@ -81,19 +88,22 @@ public class Main {
 				frame.setVisible(true);
 			}
 
-			lastRequestTime = new Date().getTime();
-
-			timeOutThread = new Timeout();
-			timeOutThread.start();
-
 			srv = HttpServer.create(addr, 10);
 			srv.createContext("/", new FileHandler());
 			System.out.printf("Server started at %s\n", serverUrl);
 			openWebpage(new URL(serverUrl));
 			srv.start();
+			lastRequestTime = new Date().getTime();
+
+			timeOutThread = new Timeout();
+			timeOutThread.start();
 		} catch (BindException be) {
-			System.err.printf("ERROR: Couldn't bind an address: %s\n", be.getMessage());
-			System.exit(1);
+			if (port + 1 < port_max) {
+				System.out.printf("WARNING: Couldn't bind an address %s: %s\n", serverUrl, be.getMessage());
+				startServer(host, port + 1);
+			} else {
+				System.err.printf("ERROR: All ports in range from %d to %d is already in use! Shutting down", port_min, port_max);
+			}
 		} catch (Exception e) {
 			System.err.printf("ERROR: %s\n", e.getMessage());
 			System.exit(1);
@@ -105,7 +115,9 @@ public class Main {
 	 * 
 	 */
 	public static void quit() {
-		srv.stop(0);
+		if (srv != null) {
+			srv.stop(0);
+		}
 		System.exit(0);
 	}
 
@@ -115,11 +127,25 @@ public class Main {
 	 */
 	public static void populateConfig() {
 		bindHost = Config.get("Host");
-		port = Integer.valueOf(Config.get("Port"));
+		port_min = Integer.valueOf(Config.get("PortMin"));
+		port_max = Integer.valueOf(Config.get("PortMax"));
 		showFrame = Config.get("ShowFrame").equals("1");
 		documentRoot = Config.get("DocumentRoot");
 		defaultFile = Config.get("DefaultFile");
 		shutdownAfter = Integer.valueOf(Config.geti("ShutdownAfter"));
+	}
+
+	private static void help() {
+		System.out.printf("Usage:\tjava -jar start.jar [options]\n\n");
+		System.out.println("Options:");
+		System.out.println("  -h, --host \t\tHost to bind to (default: 127.0.0.1)");
+		System.out.println("  -pm, --port-min \tMinimal port to bind to (default: 8000)");
+		System.out.println("  -px, --port-max \tMaximum port to bind to (default: 9000)");
+		System.out.println("  -w, --frame \t\tShow the control window");
+		System.out.println("  -r, --root \t\tDocument root for the server (default is the current working directory)");
+		System.out.println("  -c, --config \t\tLoad the configuration from the file");
+		System.out.println("  -i, --index \t\tDefault file name (default: index.html)");
+		System.out.println("  -S, --shutdown-after \tTime (in seconds) to shutdown the server after the last request");
 	}
 
 	/**
@@ -129,6 +155,11 @@ public class Main {
 	 */
 	private static void parseArgs(String[] args) {
 		if (args.length > 0) {
+			if (args[0].equals("--help")) {
+				help();
+				quit();
+			}
+
 			int currentArg = 0;
 			do {
 				String arg = args[currentArg];
@@ -138,8 +169,13 @@ public class Main {
 					currentArg++;
 				}
 
-				if (arg.equals("--port") || arg.equals("-p")) {
-					Config.set("Port", args[currentArg + 1]);
+				if (arg.equals("--port-min") || arg.equals("-pm")) {
+					Config.set("PortMin", args[currentArg + 1]);
+					currentArg++;
+				}
+
+				if (arg.equals("--port-max") || arg.equals("-px")) {
+					Config.set("PortMax", args[currentArg + 1]);
 					currentArg++;
 				}
 

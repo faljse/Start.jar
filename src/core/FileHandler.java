@@ -71,6 +71,7 @@ public class FileHandler implements HttpHandler {
 					mime = "application/javascript";
 					break;
 				case "json":
+				case "map":
 					mime = "application/json";
 					break;
 				case "wav":

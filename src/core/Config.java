@@ -15,7 +15,8 @@ public class Config {
 	public static void initDefaults() {
 		set("DocumentRoot", ".");
 		set("Host", "127.0.0.1");
-		set("Port", "8888");
+		set("PortMin", "8000");
+		set("PortMax", "9000");
 		set("ShowFrame", "true");
 		set("ShutdownAfter", "300");
 		set("DefaultFile", "index.html");
